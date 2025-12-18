@@ -1,4 +1,5 @@
-let song;
+let canciones = [];
+let cancionActual = null;
 let isOn= false;
 
 let handPose;
@@ -11,7 +12,11 @@ let pinch = 0;
 function preload() {
   // Load the handPose model
   handPose = ml5.handPose(); // Carga el modelo Hand pose, se puede cambiar por otros modelos de ml
-  song= loadSound ("canciones/pulgar.mp3")
+  canciones.push(loadSound("canciones/indice.mp3"));
+  canciones.push(loadSound("canciones/pulgar.mp3"));
+  canciones.push(loadSound("canciones/medio.mp3"));
+  canciones.push(loadSound("canciones/anular.mp3"));
+  canciones.push(loadSound("canciones/menique.mp3"));
 }
 
 function setup() {
@@ -22,8 +27,11 @@ function setup() {
   video.hide();
   // Start detecting hands from the webcam video
   handPose.detectStart(video, gotHands);
+  userStartAudio();
   
 }
+
+
 
 function draw() {
   // Draw the webcam video
@@ -32,8 +40,12 @@ function draw() {
   // If there is at least one hand, se ejecuta cuando hay una mano en escena
   if (hands.length > 0) {
     if(!isOn){
-       song.loop();
-      isOn= true;
+    let indiceRandom = floor(random(canciones.length));
+    cancionActual = canciones[indiceRandom];
+    cancionActual.loop();
+    isOn= true;
+      
+      
       }
     
     // Find the index finger tip and thumb tip
@@ -55,12 +67,13 @@ function draw() {
     //Controlar el volumen
     let volumen= map(pinch, 20, 200, 0, 1);
     volumen = constrain(volumen, 0, 1);
-    song.setVolume(volumen);
+    cancionActual.setVolume(volumen);
     
     
   }else{
     if(isOn){
-      song.stop();
+      cancionActual.stop();
+    cancionActual = null;
       isOn= false;
     }
   }
